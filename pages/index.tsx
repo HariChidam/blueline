@@ -1,19 +1,77 @@
-
+//next
 import Head from 'next/head'
 import Image from 'next/image'
+
+//react
+import { useEffect, useState } from 'react'
+
+//supabase
+import supabase from '../supabase.js'
+//components
 import Tile from '../components/Tile'
+
+//Pictures
 import blueline from '../public/blueline.png'
-import Ricks from '../public/Ricks.jpeg'
-import Skeeps from '../public/Skeeps.jpeg'
-import Blep from '../public/Blep.jpeg'
-import BrownJug from '../public/BrownJug.jpeg'
-import Live from '../public/Live.jpeg'
-import Charleys from '../public/Charleys.jpeg'
-import GarBar from '../public/GarBar.jpeg'
-import Circ from '../public/Circ.jpeg'
-import Cantina from '../public/Cantina.jpeg'
+
+interface Bar {
+  WaitTime: number;
+  CoverFee: number;
+  Vibe: string;
+  imageUrl: string;
+  Name: string;
+  Bouncer: string;
+  Cops: boolean;
+}
 
 export default function Home() {
+  const [barsData, setBarsData] = useState<Bar[]>([]);
+
+  const getBarsImage = async () => {
+    const updatedBarsData = await Promise.all(
+      barsData.map(async (bar) => {
+        console.log(bar.Name);
+        if (bar.imageUrl) {
+          return bar; // Return the original object if imageUrl exists
+        } else {
+          const { data: ImageData, error } = await supabase.storage.from('bars').download(bar.Name)
+          if (error) {
+            console.error(error);
+            return bar;
+          } else {
+            const blob = new Blob([ImageData]);
+            const imageUrl = URL.createObjectURL(blob);
+            return {
+              ...bar,
+              imageUrl,
+            };
+          }
+        }
+      })
+    );
+    setBarsData(updatedBarsData);
+  };
+
+  useEffect(() => {
+    const getBarsInfo = async () => {
+      const { data, error } = await supabase.from('bars').select('*');
+      if (error) {
+        console.error(error);
+      } else {
+        setBarsData(data || []);
+      }
+    };
+
+    getBarsInfo();
+  }, []);
+
+  useEffect(() => {
+    if (barsData.length > 0) {
+      getBarsImage();
+    }
+  }, [barsData]);
+
+
+
   return (
     <div className='flex flex-col items-center'>
         <Head>
@@ -22,23 +80,26 @@ export default function Home() {
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <link rel="icon" href="favicon.png" />
         </Head>
-        <div className='flex items-center p-4'>
-          <Image src={blueline} width={100} height={100} alt={''}> 
-          </Image>
-          <h1 className= 'text-8xl font-bold bg-gradient-to-r from-slate-950 via-blue-800 to-blue-500 bg-clip-text text-transparent pl-4 text-center' >blueline</h1>
+        <div className="flex items-center p-4">
+          <Image src={blueline} width={75} height={75} alt={''} />
+          <h1 className="text-6xl sm:text-7xl md:text-8xl font-bold bg-gradient-to-r from-slate-950 via-blue-800 to-blue-500 bg-clip-text text-transparent pl-4 text-center">
+            blueline
+          </h1>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Tile WaitTime={15} CoverFee={20} Vibe='Bumpin' ImageUrl={Ricks} Name='Ricks' Bouncer='Big Mike' Cops={false} />
-            <Tile WaitTime={15} CoverFee={20} Vibe='Bumpin' ImageUrl={Skeeps} Name='Skeeps' Bouncer='Big Mike' Cops={false} /> 
-            <Tile WaitTime={15} CoverFee={20} Vibe='Bumpin' ImageUrl={Blep} Name='Blep' Bouncer='Big Mike' Cops={false} />
-            <Tile WaitTime={15} CoverFee={20} Vibe='Bumpin' ImageUrl={BrownJug} Name='The Brown Jug' Bouncer='Big Mike' Cops={false} />
-            <Tile WaitTime={15} CoverFee={20} Vibe='Bumpin' ImageUrl={Live} Name='Live' Bouncer='Big Mike' Cops={false} /> 
-            <Tile WaitTime={15} CoverFee={20} Vibe='Bumpin' ImageUrl={Charleys} Name='Charleys' Bouncer='Big Mike' Cops={false} /> 
-            <Tile WaitTime={15} CoverFee={20} Vibe='Bumpin' ImageUrl={GarBar} Name='Gar Bar' Bouncer='Big Mike' Cops={false} /> 
-            <Tile WaitTime={15} CoverFee={20} Vibe='Bumpin' ImageUrl={Circ} Name='Circ' Bouncer='Big Mike' Cops={false} /> 
-            <Tile WaitTime={15} CoverFee={20} Vibe='Bumpin' ImageUrl={Cantina} Name='Cantina' Bouncer='Big Mike' Cops={false} /> 
+
+        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
+          {barsData.map((bar) => (
+            <Tile
+              WaitTime={bar.WaitTime}
+              CoverFee={bar.CoverFee}
+              Vibe={bar.Vibe}
+              ImageUrl={bar.imageUrl}
+              Name={bar.Name}
+              Bouncer={bar.Bouncer}
+              Cops={bar.Cops}
+            />
+          ))}
         </div>
     </div>
   )
-
 }
