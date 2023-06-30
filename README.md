@@ -1,5 +1,5 @@
 # blueline
-This is a Crowdsourced Line Checking app for the Bars and Clubs of Ann Arbor. 
+This is a Crowdsourced Line Checking web app for the Bars and Clubs of Ann Arbor. 
 
 
 # Set Up
