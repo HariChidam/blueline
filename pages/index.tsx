@@ -1,17 +1,17 @@
 //next
-import Head from 'next/head'
-import Image from 'next/image'
-
+import Head from 'next/head';
+import Image from 'next/image';
 //react
-import { useEffect, useState } from 'react'
-
+import { useEffect, useState } from 'react';
 //supabase
-import supabase from '../supabase.js'
+import supabase from '../supabase.js';
 //components
-import Tile from '../components/Tile'
-
+import Tile from '../components/Tile';
 //Pictures
-import blueline from '../public/blueline.png'
+import blueline from '../public/blueline.png';
+//other
+import cookie from "js-cookie";
+import { v4 as uuid} from 'uuid';
 
 interface Bar {
   WaitTime: number;
@@ -29,7 +29,6 @@ export default function Home() {
   const getBarsImage = async () => {
     const updatedBarsData = await Promise.all(
       barsData.map(async (bar) => {
-        console.log(bar.Name);
         if (bar.imageUrl) {
           return bar; // Return the original object if imageUrl exists
         } else {
@@ -61,16 +60,23 @@ export default function Home() {
       }
     };
 
+    const setCookies = () => {
+      const userId = cookie.get('user') || uuid(); // Get the existing user cookie or generate a new unique identifier
+      let visitCount = parseFloat(cookie.get('visitCount') || '0'); // Get the existing visit count or default to 0
+      visitCount += 0.5; // Increment the visit count by 0.5
+      cookie.set('user', userId);
+      cookie.set('visitCount', visitCount.toString());
+    };
+
+    setCookies();
     getBarsInfo();
-  }, []);
+  }, []); 
 
   useEffect(() => {
     if (barsData.length > 0) {
       getBarsImage();
     }
   }, [barsData]);
-
-
 
   return (
     <div className='flex flex-col items-center'>
