@@ -14,7 +14,7 @@ import cookie from "js-cookie";
 import { v4 as uuid} from 'uuid';
 
 interface Bar {
-  WaitTime: number;
+  WaitTimeArray: number[];
   CoverFee: number;
   Vibe: string;
   imageUrl: string;
@@ -56,6 +56,7 @@ export default function Home() {
       if (error) {
         console.error(error);
       } else {
+        console.log(data)
         setBarsData(data || []);
       }
     };
@@ -96,7 +97,7 @@ export default function Home() {
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
           {barsData.map((bar) => (
             <Tile
-              WaitTime={bar.WaitTime}
+              WaitTimeArray={bar.WaitTimeArray}
               CoverFee={bar.CoverFee}
               Vibe={bar.Vibe}
               ImageUrl={bar.imageUrl}
