@@ -48,6 +48,10 @@ const Tile: React.FC<TileProps> = ({
     }
   };
 
+  const handleCancel = async () => {
+    setUpdateMode(false)
+  };
+
   useEffect(() => {
     console.log(WaitTimeArray)
     if (WaitTimeArray !== undefined) {
@@ -192,7 +196,13 @@ const Tile: React.FC<TileProps> = ({
               </select>
             </div>
           </form>
-          <div className='flex flex-col items-center pb-4'>
+          <div className='flex flex-row justify-evenly pb-4'>
+          <button 
+              className='bg-slate-50 rounded-lg shadow-md hover:scale-105 hover:shadow-2xl text-neutral-900 font-bold py-2 px-4'
+              onClick={handleCancel}
+              >
+              Cancel
+            </button>
             <button
               className="bg-slate-50 rounded-lg shadow-md hover:scale-105 hover:shadow-2xl text-neutral-900 font-bold py-2 px-4"
               onClick={handleSubmit}
