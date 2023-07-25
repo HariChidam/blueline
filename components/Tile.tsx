@@ -1,6 +1,7 @@
 import React, { FormEvent, useState, useEffect } from 'react';
-import Image from 'next/image';
+import Image from "next/legacy/image";
 import supabase from '../supabase.js';
+import blueline from '../public/blueline.png';
 
 interface TileProps {
   WaitTimeArray: number[];
@@ -106,7 +107,15 @@ const Tile: React.FC<TileProps> = ({
   return (
     <div className="flex flex-col sm:w-80 md:w-96 lg:w-96 max-w-xl mx-auto overflow-hidden bg-gradient-to-r from-slate-950 via-blue-800 to-blue-500 rounded-lg shadow-md hover:scale-105 hover:shadow-2xl">
       <div className="relative h-40 w-full">
-        <Image src={ImageUrl} alt="Bar" layout='fill' objectFit="cover" className="rounded-lg w-full" />
+        {ImageUrl ? 
+          (
+            <Image src={ImageUrl} alt="Bar" layout='fill' objectFit="cover" className="rounded-lg w-full" />
+          )
+          :
+          (
+            <Image src={blueline} alt="Bar" layout='fill' objectFit="cover" className="rounded-lg w-full" />
+          )
+        }
       </div>
       <h1 className="text-2xl text-center font-bold mb-2 text-neutral-50 py-2">{Name}</h1>
       {!updateMode ? (
