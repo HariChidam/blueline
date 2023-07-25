@@ -5,6 +5,7 @@ import Image from "next/legacy/image";
 import { useEffect, useState } from 'react';
 //supabase
 import supabase from '../supabase.js';
+import { Session, AuthChangeEvent, User as SupabaseUser, } from '@supabase/supabase-js';
 //components
 import Tile from '../components/Tile';
 //Pictures
@@ -25,6 +26,7 @@ interface Bar {
 
 export default function Home() {
   const [barsData, setBarsData] = useState<Bar[]>([]);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
 
   const getBarsImage = async () => {
     const updatedBarsData = await Promise.all(
@@ -49,6 +51,25 @@ export default function Home() {
     );
     setBarsData(updatedBarsData);
   };
+
+  useEffect(() => {
+    const unsubscribe = supabase.auth.onAuthStateChange((event, session) => {
+        if(event === 'SIGNED_IN'){
+            setUser(session.user);
+        }
+      });
+  }, []);
+
+  const handleGoogleSignIn = async () => {
+    const {data , error} = await supabase.auth.signInWithOAuth({provider: 'google'});
+    console.log('here')
+    console.log(data)
+    console.log(error)
+  }
+
+  const handleGoogleSignOut = async () => {
+    const {error} = await supabase.auth.signOut();
+  }
 
   useEffect(() => {
     const getBarsInfo = async () => {
@@ -93,6 +114,8 @@ export default function Home() {
             blueline
           </h1>
         </div>
+        <button onClick={handleGoogleSignIn}> Sign In </button>
+        <button onClick={handleGoogleSignOut}> Sign Out </button>
 
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
           {barsData.map((bar) => (
