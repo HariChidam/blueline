@@ -5,7 +5,7 @@ import supabase from '../supabase.js';
 interface TileProps {
   WaitTimeArray: number[];
   CoverFee: number;
-  Vibe: string;
+  VibeArray: string[];
   ImageUrl: string;
   Name: string;
   Bouncer: string;
@@ -15,7 +15,7 @@ interface TileProps {
 const Tile: React.FC<TileProps> = ({
   WaitTimeArray,
   CoverFee,
-  Vibe,
+  VibeArray,
   ImageUrl,
   Name,
   Bouncer,
@@ -25,6 +25,7 @@ const Tile: React.FC<TileProps> = ({
   const [newWaitTime, setNewWaitTime] = useState(0);
   const [newCoverFee, setNewCoverFee] = useState(0);
   const [newVibe, setNewVibe] = useState('');
+  const [mostFrequentVibe, setMostFrequentVibe] = useState('');
   const [newBouncer, setNewBouncer] = useState('');
   const [newCops, setNewCops] = useState(false);
   const [WaitTime, setWaitTime] = useState(0);
@@ -38,9 +39,10 @@ const Tile: React.FC<TileProps> = ({
     
     console.log('here')
     const updatedWaitTime = [...WaitTimeArray, newWaitTime];
+    const updatedVibe = [...VibeArray, newVibe];
     const { error } = await supabase
     .from('bars')
-    .update({WaitTimeArray: updatedWaitTime, CoverFee: newCoverFee, Vibe: newVibe, Bouncer: newBouncer, Cops: newCops})
+    .update({WaitTimeArray: updatedWaitTime, CoverFee: newCoverFee, VibeArray: updatedVibe, Bouncer: newBouncer, Cops: newCops})
     .eq('Name', Name);
 
     if (error) {
@@ -60,7 +62,29 @@ const Tile: React.FC<TileProps> = ({
       setWaitTime(waitTimeAverage);
     }
   }, [WaitTimeArray]);
+
+  useEffect(() => {
+    if (VibeArray !== undefined) {
+      // Find the most frequent vibe in the VibeArray
+      const vibeCount: Record<string, number> = VibeArray.reduce((acc: Record<string, number>, vibe: string) => {
+        acc[vibe] = (acc[vibe] || 0) + 1;
+        return acc;
+      }, {});
   
+      // Get the vibe with the maximum count
+      let maxCount = 0;
+      let mostFrequent = '';
+      for (const vibe in vibeCount) {
+        if (vibeCount[vibe] > maxCount) {
+          maxCount = vibeCount[vibe];
+          mostFrequent = vibe;
+        }
+      }
+  
+      // Set the most frequent vibe in the state
+      setMostFrequentVibe(mostFrequent);
+    }
+  }, [VibeArray]);
   
   
   const handleWaitChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -81,8 +105,8 @@ const Tile: React.FC<TileProps> = ({
 
   return (
     <div className="flex flex-col sm:w-80 md:w-96 lg:w-96 max-w-xl mx-auto overflow-hidden bg-gradient-to-r from-slate-950 via-blue-800 to-blue-500 rounded-lg shadow-md hover:scale-105 hover:shadow-2xl">
-      <div className="relative h-40">
-        <Image src={ImageUrl} alt="Bar" layout="fill" objectFit="cover" className="rounded-lg w-full" />
+      <div className="relative h-40 w-full">
+        <Image src={ImageUrl} alt="Bar" layout='fill' objectFit="cover" className="rounded-lg w-full" />
       </div>
       <h1 className="text-2xl text-center font-bold mb-2 text-neutral-50 py-2">{Name}</h1>
       {!updateMode ? (
@@ -99,7 +123,7 @@ const Tile: React.FC<TileProps> = ({
               </div>
               <div className="flex flex-col items-center p-2 text-neutral-900">
                 <h2 className="font-bold">Vibe</h2>
-                <h2>{Vibe}</h2>
+                <h2>{mostFrequentVibe}</h2>
               </div>
             </div>
             <div className="flex justify-evenly px-4 mx-4">

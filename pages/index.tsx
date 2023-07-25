@@ -16,7 +16,7 @@ import { v4 as uuid} from 'uuid';
 interface Bar {
   WaitTimeArray: number[];
   CoverFee: number;
-  Vibe: string;
+  VibeArray: string[];
   imageUrl: string;
   Name: string;
   Bouncer: string;
@@ -99,7 +99,7 @@ export default function Home() {
             <Tile
               WaitTimeArray={bar.WaitTimeArray}
               CoverFee={bar.CoverFee}
-              Vibe={bar.Vibe}
+              VibeArray={bar.VibeArray}
               ImageUrl={bar.imageUrl}
               Name={bar.Name}
               Bouncer={bar.Bouncer}
