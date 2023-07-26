@@ -114,8 +114,8 @@ export default function Home() {
             blueline
           </h1>
         </div>
-        <button onClick={handleGoogleSignIn}> Sign In </button>
-        <button onClick={handleGoogleSignOut}> Sign Out </button>
+        <button className='bg-slate-900 text-white' onClick={handleGoogleSignIn}> Sign In </button>
+        <button className='bg-slate-900 text-white' onClick={handleGoogleSignOut}> Sign Out </button>
 
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
           {barsData.map((bar) => (
