@@ -53,12 +53,14 @@ export default function Home() {
   };
 
   useEffect(() => {
-    const unsubscribe = supabase.auth.onAuthStateChange((event, session) => {
-        if(event === 'SIGNED_IN'){
-            setUser(session.user);
-        }
-      });
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event == 'SIGNED_IN') 
+      {
+        console.log('SIGNED_IN', session)
+      }
+    })
   }, []);
+  
 
   const handleGoogleSignIn = async () => {
     const {data , error} = await supabase.auth.signInWithOAuth({provider: 'google'});
