@@ -40,6 +40,7 @@ const Tile: React.FC<TileProps> = ({
   const [WaitTime, setWaitTime] = useState(0);
   
 
+  //Calculates distance between two coordinates
   function degToRad(deg: number): number {
     return deg * (Math.PI / 180);
   }
@@ -66,6 +67,7 @@ const Tile: React.FC<TileProps> = ({
     return distance;
   }
 
+  //Updates the information of the bar if within 200m of location
   const updateInfo = async () => {
 
     const isWithinDistance = calculateDistance(userxcoord, userycoord, xcoord, ycoord) < 200;
@@ -77,6 +79,8 @@ const Tile: React.FC<TileProps> = ({
       alert("You must be within 200m of the location to update information")
     }
   };
+
+  //Updates bar info when the form is submitted
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setUpdateMode(false);
@@ -94,10 +98,12 @@ const Tile: React.FC<TileProps> = ({
     }
   };
 
+  //Cancels the update
   const handleCancel = async () => {
     setUpdateMode(false)
   };
 
+  //Finds the average of the wait times
   useEffect(() => {
     console.log(WaitTimeArray)
     if (WaitTimeArray !== undefined) {
@@ -107,6 +113,7 @@ const Tile: React.FC<TileProps> = ({
     }
   }, [WaitTimeArray]);
 
+  //Finds the most frequent vibe
   useEffect(() => {
     if (VibeArray !== undefined) {
       // Find the most frequent vibe in the VibeArray
@@ -148,7 +155,7 @@ const Tile: React.FC<TileProps> = ({
   };
 
   return (
-    <div className="flex flex-col sm:w-80 md:w-96 lg:w-96 max-w-xl mx-auto overflow-hidden bg-gradient-to-r from-slate-950 via-blue-800 to-blue-500 rounded-lg shadow-md hover:scale-105 hover:shadow-2xl">
+    <div className="flex flex-col sm:w-80 md:w-96 lg:w-96 max-w-xl mx-auto overflow-hidden bg-gradient-to-r from-slate-950 via-blue-800 to-blue-500 rounded-lg shadow-md hover:shadow-2xl">
       <div className="relative h-40 w-full">
         {ImageUrl ? 
           (

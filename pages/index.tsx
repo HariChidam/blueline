@@ -12,7 +12,7 @@ import Tile from '../components/Tile';
 import blueline from '../public/blueline.png';
 //other
 import cookie from "js-cookie";
-import { v4 as uuid} from 'uuid';
+import {v4 as uuid} from 'uuid';
 
 interface Bar {
   WaitTimeArray: number[];
@@ -31,6 +31,7 @@ export default function Home() {
   const [user, setUser] = useState<User | null>(null);
   const [userxcoord, setUserxcoord] = useState(0);
   const [userycoord, setUserycoord] = useState(0);
+  const [numVisited, setNumVisited] = useState(0);
 
   const getBarsImage = async () => {
     const updatedBarsData = await Promise.all(
@@ -111,6 +112,7 @@ export default function Home() {
       visitCount += 0.5; // Increment the visit count by 0.5
       cookie.set('user', userId);
       cookie.set('visitCount', visitCount.toString());
+      setNumVisited(visitCount);
     };
 
     setCookies();
@@ -139,43 +141,71 @@ export default function Home() {
             blueline
           </h1>
         </div>
-        <div className='pt-8'>
-            {user ? (
-              <button
-                className="bg-gradient-to-r from-slate-950 via-blue-800 to-blue-500 text-white font-bold p-2 rounded-lg shadow hover:scale-105 hover:shadow-lg"
-                onClick={handleGoogleSignOut}
-              >
-                Sign Out
-              </button>
-            ) : (
-              <button
-                className="bg-gradient-to-r from-slate-950 via-blue-800 to-blue-500 text-white font-bold p-2 rounded-lg shadow hover:scale-105 hover:shadow-lg"
-                onClick={handleGoogleSignIn}
-              >
-                Sign In
-              </button>
-            )}
-        </div>
+        {numVisited > 10 &&
+          (
+            <div className='pt-8'>
+              {user ? (
+                <button
+                  className="bg-gradient-to-r from-slate-950 via-blue-800 to-blue-500 text-white font-bold p-2 rounded-lg shadow hover:scale-105 hover:shadow-lg"
+                  onClick={handleGoogleSignOut}
+                >
+                  Sign Out
+                </button>
+              ) : (
+                <button
+                  className="bg-gradient-to-r from-slate-950 via-blue-800 to-blue-500 text-white font-bold p-2 rounded-lg shadow hover:scale-105 hover:shadow-lg"
+                  onClick={handleGoogleSignIn}
+                >
+                  Sign In w/ UMich
+                </button>
+              )}
+            </div>
+          )
+        }
       </div>
 
+      {
+        numVisited > 11 ? (
+          user && (
+            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
+              {barsData.map((bar) => (
+                <Tile
+                  WaitTimeArray={bar.WaitTimeArray}
+                  CoverFee={bar.CoverFee}
+                  VibeArray={bar.VibeArray}
+                  ImageUrl={bar.imageUrl}
+                  Name={bar.Name}
+                  Bouncer={bar.Bouncer}
+                  Cops={bar.Cops}
+                  xcoord={bar.xcoord}
+                  ycoord={bar.ycoord}
+                  userxcoord={userxcoord}
+                  userycoord={userycoord}
+                />
+              ))}
+            </div>
+          )
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
+            {barsData.map((bar) => (
+              <Tile
+                WaitTimeArray={bar.WaitTimeArray}
+                CoverFee={bar.CoverFee}
+                VibeArray={bar.VibeArray}
+                ImageUrl={bar.imageUrl}
+                Name={bar.Name}
+                Bouncer={bar.Bouncer}
+                Cops={bar.Cops}
+                xcoord={bar.xcoord}
+                ycoord={bar.ycoord}
+                userxcoord={userxcoord}
+                userycoord={userycoord}
+              />
+            ))}
+          </div>
+        )
+      }
 
-      <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
-        {barsData.map((bar) => (
-          <Tile
-            WaitTimeArray={bar.WaitTimeArray}
-            CoverFee={bar.CoverFee}
-            VibeArray={bar.VibeArray}
-            ImageUrl={bar.imageUrl}
-            Name={bar.Name}
-            Bouncer={bar.Bouncer}
-            Cops={bar.Cops}
-            xcoord={bar.xcoord}
-            ycoord={bar.ycoord}
-            userxcoord={userxcoord}
-            userycoord={userycoord}
-          />
-        ))}
-      </div>
     </div>
   );
 };
