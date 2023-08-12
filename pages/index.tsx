@@ -32,6 +32,7 @@ export default function Home() {
   const [userxcoord, setUserxcoord] = useState(0);
   const [userycoord, setUserycoord] = useState(0);
   const [numVisited, setNumVisited] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const getBarsImage = async () => {
     const updatedBarsData = await Promise.all(
@@ -125,6 +126,10 @@ export default function Home() {
     }
   }, [barsData]);
 
+  const filteredBars = barsData.filter((Bar) =>
+    Bar.Name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="flex flex-col items-center">
       <Head>
@@ -134,7 +139,7 @@ export default function Home() {
         <link rel="icon" href="favicon.png" />
       </Head>
 
-      <div className='flex flex-col items-center pb-20'>
+      <div className='flex flex-col items-center pb-8'>
         <div className="flex items-center w-full h-20 p-8">
           <Image src={blueline} width={75} height={75} alt="" />
           <h1 className="text-6xl bg-gradient-to-r from-slate-950 via-blue-800 to-blue-500 sm:text-7xl md:text-8xl font-bold bg-clip-text text-transparent pl-4">
@@ -167,42 +172,64 @@ export default function Home() {
       {
         numVisited > 11 ? (
           user && (
-            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
-              {barsData.map((bar) => (
-                <Tile
-                  WaitTimeArray={bar.WaitTimeArray}
-                  CoverFee={bar.CoverFee}
-                  VibeArray={bar.VibeArray}
-                  ImageUrl={bar.imageUrl}
-                  Name={bar.Name}
-                  Bouncer={bar.Bouncer}
-                  Cops={bar.Cops}
-                  xcoord={bar.xcoord}
-                  ycoord={bar.ycoord}
-                  userxcoord={userxcoord}
-                  userycoord={userycoord}
+            <div>
+              <div className="flex justify-center items-center pb-4">
+                <input
+                  type="text"
+                  placeholder="Search by name..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="border rounded-md p-2 w-1/2 border-red-950"
                 />
-              ))}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
+                {filteredBars.map((bar) => (
+                  <Tile
+                    WaitTimeArray={bar.WaitTimeArray}
+                    CoverFee={bar.CoverFee}
+                    VibeArray={bar.VibeArray}
+                    ImageUrl={bar.imageUrl}
+                    Name={bar.Name}
+                    Bouncer={bar.Bouncer}
+                    Cops={bar.Cops}
+                    xcoord={bar.xcoord}
+                    ycoord={bar.ycoord}
+                    userxcoord={userxcoord}
+                    userycoord={userycoord}
+                  />
+                ))}
+              </div>
             </div>
           )
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
-            {barsData.map((bar) => (
-              <Tile
-                WaitTimeArray={bar.WaitTimeArray}
-                CoverFee={bar.CoverFee}
-                VibeArray={bar.VibeArray}
-                ImageUrl={bar.imageUrl}
-                Name={bar.Name}
-                Bouncer={bar.Bouncer}
-                Cops={bar.Cops}
-                xcoord={bar.xcoord}
-                ycoord={bar.ycoord}
-                userxcoord={userxcoord}
-                userycoord={userycoord}
-              />
-            ))}
-          </div>
+          <div>
+              <div className="flex justify-center items-center pb-4">
+                <input
+                  type="text"
+                  placeholder="Search by name..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="border rounded-md p-2 w-1/2 border-red-950"
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
+                {filteredBars.map((bar) => (
+                  <Tile
+                    WaitTimeArray={bar.WaitTimeArray}
+                    CoverFee={bar.CoverFee}
+                    VibeArray={bar.VibeArray}
+                    ImageUrl={bar.imageUrl}
+                    Name={bar.Name}
+                    Bouncer={bar.Bouncer}
+                    Cops={bar.Cops}
+                    xcoord={bar.xcoord}
+                    ycoord={bar.ycoord}
+                    userxcoord={userxcoord}
+                    userycoord={userycoord}
+                  />
+                ))}
+              </div>
+            </div>
         )
       }
 
