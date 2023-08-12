@@ -69,10 +69,33 @@ export default function Home() {
       setUser(null);
     }
   };
-  
+
   useEffect(() => {
-    supabase.auth.onAuthStateChange(handleAuthStateChange);
+    const fetchSession = async () => {
+      try {
+        const session = await supabase.auth.getSession();
+        if (session) {
+          console.log(session)
+          setUser(session.data.session?.user || null)
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchSession();
+    // Listen for changes in the authentication state
+    const authListener = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        setUser(session.user);
+      }
+      if (event === 'SIGNED_OUT') {
+        setUser(null);
+      }
+    });
+
   }, []);
+  
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(position => {
