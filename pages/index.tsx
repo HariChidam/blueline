@@ -22,11 +22,15 @@ interface Bar {
   Name: string;
   Bouncer: string;
   Cops: boolean;
+  xcoord: number;
+  ycoord: number;
 }
 
 export default function Home() {
   const [barsData, setBarsData] = useState<Bar[]>([]);
   const [user, setUser] = useState<User | null>(null);
+  const [userxcoord, setUserxcoord] = useState(0);
+  const [userycoord, setUserycoord] = useState(0);
 
   const getBarsImage = async () => {
     const updatedBarsData = await Promise.all(
@@ -58,11 +62,26 @@ export default function Home() {
       console.log('SIGNED_IN', session.user);
       setUser(session.user);
     }
+    if (event === 'SIGNED_OUT') {
+      console.log('SIGNED_OUT');
+      setUser(null);
+    }
   };
   
   useEffect(() => {
     supabase.auth.onAuthStateChange(handleAuthStateChange);
   }, []);
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(position => {
+      const { latitude, longitude } = position.coords;
+      // Show a map centered at latitude / longitude.
+      console.log(latitude, longitude)
+      setUserxcoord(latitude);
+      setUserycoord(longitude);
+    });
+
+  }, [userxcoord , userycoord]);
 
   const handleGoogleSignIn = async () => {
     const {data , error} = await supabase.auth.signInWithOAuth({provider: 'google'});
@@ -113,30 +132,32 @@ export default function Home() {
         <link rel="icon" href="favicon.png" />
       </Head>
 
-      <div className="flex justify-center items-center w-full h-20 bg-gradient-to-r from-slate-950 via-blue-800 to-blue-500">
-        <Image src={blueline} width={75} height={75} alt="" />
-        <h1 className="text-6xl sm:text-7xl md:text-8xl font-bold bg-clip-text text-transparent pl-4">
-          blueline
-        </h1>
-        <div className="flex-grow" />
-        <div>
-          {user ? (
-            <button
-              className="bg-gradient-to-r from-slate-950 via-blue-800 to-blue-500 text-white font-bold p-2 rounded-lg shadow hover:scale-105 hover:shadow-lg"
-              onClick={handleGoogleSignOut}
-            >
-              Sign Out
-            </button>
-          ) : (
-            <button
-              className="bg-gradient-to-r from-slate-950 via-blue-800 to-blue-500 text-white font-bold p-2 rounded-lg shadow hover:scale-105 hover:shadow-lg"
-              onClick={handleGoogleSignIn}
-            >
-              Sign In
-            </button>
-          )}
+      <div className='flex flex-col items-center pb-20'>
+        <div className="flex items-center w-full h-20 p-8">
+          <Image src={blueline} width={75} height={75} alt="" />
+          <h1 className="text-6xl bg-gradient-to-r from-slate-950 via-blue-800 to-blue-500 sm:text-7xl md:text-8xl font-bold bg-clip-text text-transparent pl-4">
+            blueline
+          </h1>
+        </div>
+        <div className='pt-8'>
+            {user ? (
+              <button
+                className="bg-gradient-to-r from-slate-950 via-blue-800 to-blue-500 text-white font-bold p-2 rounded-lg shadow hover:scale-105 hover:shadow-lg"
+                onClick={handleGoogleSignOut}
+              >
+                Sign Out
+              </button>
+            ) : (
+              <button
+                className="bg-gradient-to-r from-slate-950 via-blue-800 to-blue-500 text-white font-bold p-2 rounded-lg shadow hover:scale-105 hover:shadow-lg"
+                onClick={handleGoogleSignIn}
+              >
+                Sign In
+              </button>
+            )}
         </div>
       </div>
+
 
       <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
         {barsData.map((bar) => (
@@ -148,9 +169,13 @@ export default function Home() {
             Name={bar.Name}
             Bouncer={bar.Bouncer}
             Cops={bar.Cops}
+            xcoord={bar.xcoord}
+            ycoord={bar.ycoord}
+            userxcoord={userxcoord}
+            userycoord={userycoord}
           />
         ))}
       </div>
     </div>
   );
-};j
+};

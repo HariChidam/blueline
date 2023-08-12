@@ -11,6 +11,10 @@ interface TileProps {
   Name: string;
   Bouncer: string;
   Cops: boolean;
+  xcoord: number;
+  ycoord: number;
+  userxcoord: number;
+  userycoord: number;
 }
 
 const Tile: React.FC<TileProps> = ({
@@ -21,6 +25,10 @@ const Tile: React.FC<TileProps> = ({
   Name,
   Bouncer,
   Cops,
+  xcoord,
+  ycoord,
+  userxcoord,
+  userycoord,
 }) => {
   const [updateMode, setUpdateMode] = useState(false);
   const [newWaitTime, setNewWaitTime] = useState(0);
@@ -30,9 +38,44 @@ const Tile: React.FC<TileProps> = ({
   const [newBouncer, setNewBouncer] = useState('');
   const [newCops, setNewCops] = useState(false);
   const [WaitTime, setWaitTime] = useState(0);
+  
+
+  function degToRad(deg: number): number {
+    return deg * (Math.PI / 180);
+  }
+  
+  function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const earthRadius = 6371000; // Earth's radius in meters
+  
+    const lat1Rad = degToRad(lat1);
+    const lon1Rad = degToRad(lon1);
+    const lat2Rad = degToRad(lat2);
+    const lon2Rad = degToRad(lon2);
+  
+    const dLat = lat2Rad - lat1Rad;
+    const dLon = lon2Rad - lon1Rad;
+  
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1Rad) * Math.cos(lat2Rad) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  
+    const distance = earthRadius * c;
+  
+    return distance;
+  }
 
   const updateInfo = async () => {
-    setUpdateMode(true);
+
+    const isWithinDistance = calculateDistance(userxcoord, userycoord, xcoord, ycoord) < 200;
+    if(isWithinDistance)
+    {
+      setUpdateMode(true);
+    }
+    else{
+      alert("You must be within 200m of the location to update information")
+    }
   };
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
