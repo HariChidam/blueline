@@ -170,7 +170,7 @@ export default function Home() {
       </div>
 
       {
-        numVisited > 11 ? (
+        numVisited > 10 ? (
           user && (
             <div>
               <div className="flex justify-center items-center pb-4">
