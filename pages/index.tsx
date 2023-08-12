@@ -109,7 +109,7 @@ export default function Home() {
     const setCookies = () => {
       const userId = cookie.get('user') || uuid(); // Get the existing user cookie or generate a new unique identifier
       let visitCount = parseFloat(cookie.get('visitCount') || '0'); // Get the existing visit count or default to 0
-      visitCount += 0.5; // Increment the visit count by 0.5
+      visitCount += 1; // Increment the visit count by 0.5
       cookie.set('user', userId);
       cookie.set('visitCount', visitCount.toString());
       setNumVisited(visitCount);
