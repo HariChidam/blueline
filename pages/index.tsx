@@ -179,7 +179,7 @@ export default function Home() {
                   placeholder="Search by name..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="border rounded-md p-2 w-1/2 border-red-950"
+                  className="border rounded-md p-2 w-1/2 border-blue-950"
                 />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
@@ -209,7 +209,7 @@ export default function Home() {
                   placeholder="Search by name..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="border rounded-md p-2 w-1/2 border-red-950"
+                  className="border rounded-md p-2 w-1/2 border-blue-950"
                 />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
