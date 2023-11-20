@@ -2,6 +2,7 @@ import React, { FormEvent, useState, useEffect } from 'react';
 import Image from "next/legacy/image";
 import supabase from '../supabase.js';
 import blueline from '../public/blueline.png';
+import star from '../public/star.png';
 
 interface TileProps {
   WaitTimeArray: number[];
@@ -13,8 +14,6 @@ interface TileProps {
   Cops: boolean;
   xcoord: number;
   ycoord: number;
-  userxcoord: number;
-  userycoord: number;
 }
 
 const Tile: React.FC<TileProps> = ({
@@ -27,8 +26,6 @@ const Tile: React.FC<TileProps> = ({
   Cops,
   xcoord,
   ycoord,
-  userxcoord,
-  userycoord,
 }) => {
   const [updateMode, setUpdateMode] = useState(false);
   const [newWaitTime, setNewWaitTime] = useState(0);
@@ -38,9 +35,10 @@ const Tile: React.FC<TileProps> = ({
   const [newBouncer, setNewBouncer] = useState('');
   const [newCops, setNewCops] = useState(false);
   const [WaitTime, setWaitTime] = useState(0);
+  const [userxcoord, setUserxcoord] = useState(0);
+  const [userycoord, setUserycoord] = useState(0);
   
 
-  //Calculates distance between two coordinates
   function degToRad(deg: number): number {
     return deg * (Math.PI / 180);
   }
@@ -67,25 +65,54 @@ const Tile: React.FC<TileProps> = ({
     return distance;
   }
 
-  //Updates the information of the bar if within 200m of location
+  const getCurrentPositionAsync = (): Promise<GeolocationPosition> => {
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject);
+    });
+  };
+  
   const updateInfo = async () => {
-
-    const isWithinDistance = calculateDistance(userxcoord, userycoord, xcoord, ycoord) < 200;
-    if(isWithinDistance)
-    {
-      setUpdateMode(true);
-    }
-    else{
-      alert("You must be within 200m of the location to update information")
+    try {
+      const { coords: { latitude, longitude } } = await getCurrentPositionAsync();
+  
+      console.log(latitude, longitude);
+      setUserxcoord(latitude);
+      setUserycoord(longitude);
+  
+      const isWithinDistance = calculateDistance(
+        userxcoord,
+        userycoord,
+        xcoord,
+        ycoord
+      ) < 500;
+  
+      if (isWithinDistance) {
+        setUpdateMode(true);
+      } else {
+        alert("You must be within 200m of the location to update information");
+      }
+    } catch (error: any) {
+      // Handle geolocation error
+      console.error("Error getting geolocation:", error);
+      alert("Error getting geolocation. Please try again.");
     }
   };
+
+  useEffect(() => {
+    const updateCoords = async () => {
+      const { coords: { latitude, longitude } } = await getCurrentPositionAsync();
+  
+      setUserxcoord(latitude);
+      setUserycoord(longitude);
+    };
+    updateCoords();
+}, []);
 
   //Updates bar info when the form is submitted
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setUpdateMode(false);
     
-    console.log('here')
     const updatedWaitTime = [...WaitTimeArray, newWaitTime];
     const updatedVibe = [...VibeArray, newVibe];
     const { error } = await supabase
@@ -105,7 +132,6 @@ const Tile: React.FC<TileProps> = ({
 
   //Finds the average of the wait times
   useEffect(() => {
-    console.log(WaitTimeArray)
     if (WaitTimeArray !== undefined) {
       const waitTimeSum = WaitTimeArray.reduce((a, b) => a + b, 0);
       const waitTimeAverage = waitTimeSum / WaitTimeArray.length;
@@ -155,146 +181,171 @@ const Tile: React.FC<TileProps> = ({
   };
 
   return (
-    <div className="flex flex-col sm:w-80 md:w-96 lg:w-96 max-w-xl mx-auto overflow-hidden bg-gradient-to-r from-slate-950 via-blue-800 to-blue-500 rounded-lg shadow-md hover:shadow-2xl">
-      <div className="relative h-40 w-full">
-        {ImageUrl ? 
-          (
-            <Image src={ImageUrl} alt="Bar" layout='fill' objectFit="cover" className="rounded-lg w-full" />
-          )
-          :
-          (
-            <Image src={blueline} alt="Bar" layout='fill' objectFit="cover" className="rounded-lg w-full" />
-          )
-        }
-      </div>
-      <h1 className="text-2xl text-center font-bold mb-2 text-neutral-50 py-2">{Name}</h1>
-      {!updateMode ? (
-        <div>
-          <div className="flex flex-col rounded-lg bg-slate-50 mx-4 mb-4">
-            <div className="flex justify-evenly px-4 mx-4">
-              <div className="flex flex-col items-center p-2 text-neutral-900">
-                <h2 className="font-bold">Wait Time</h2>
-                <h2>{WaitTime} Min</h2>
-              </div>
-              <div className="flex flex-col items-center p-2 text-neutral-900">
-                <h2 className="font-bold">Cover Fee</h2>
-                <h2>${CoverFee}</h2>
-              </div>
-              <div className="flex flex-col items-center p-2 text-neutral-900">
-                <h2 className="font-bold">Vibe</h2>
-                <h2>{mostFrequentVibe}</h2>
-              </div>
-            </div>
-            <div className="flex justify-evenly px-4 mx-4">
-              <div className="flex flex-col items-center p-2 text-neutral-900">
-                <h2 className="font-bold">Bouncer</h2>
-                <h2>{Bouncer}</h2>
-              </div>
-              <div className="flex flex-col items-center p-2 text-neutral-900">
-                <h2 className="font-bold">Cops</h2>
-                <h2>{Cops ? 'Yes' : 'No'}</h2>
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-col items-center pb-4">
-            <button
-              className="bg-slate-50 rounded-lg shadow-md hover:scale-105 hover:shadow-2xl text-neutral-900 font-bold py-2 px-4"
-              onClick={updateInfo}
-            >
-              Update
-            </button>
-          </div>
+    <div className="flex flex-row items-center overflow-hidden bg-gradient-to-r bg-gray-200 rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 mx-2 py-2">
+        <div className="relative w-36 h-36 ml-2">
+          {ImageUrl ? 
+            (
+              <Image src={ImageUrl} alt="Bar" layout='fill' objectFit="cover" className="rounded-lg w-full" />
+            )
+            :
+            (
+              <Image src={blueline} alt="Bar" layout='fill' objectFit="cover" className="rounded-lg w-full" />
+            )
+          }
         </div>
-      ) : (
-        <div>
-          <form className="flex flex-col rounded-lg bg-slate-50 mx-4 mb-4">
-            <div className='flex justify-evenly px-4 mx-4 pb-4'>
-              <div className="flex flex-col items-center">
-                <label htmlFor="waitTime" className="text-neutral-900 font-bold">
-                  Wait Time
-                </label>
-                <select id="waitTime" name="waitTime" className="bg-slate-200 rounded-lg" onChange={handleWaitChange}>
-                  <option value="-1">N/A</option>
-                  <option value="0"> No Wait </option>
-                  <option value="5">5 Min</option>
-                  <option value="10"> 10 Min </option>
-                  <option value="15"> 15 Min </option>
-                  <option value="20"> 20 Min </option>
-                  <option value="30"> 30 Min </option>
-                  <option value="45"> 45 Min </option>
-                  <option value="60"> 1 Hr </option>
-                  <option value="90"> 1.5 Hrs </option>
-                  <option value="120"> 2 Hrs </option>
-                </select>
+      <div>
+        <div className='flex flex-row items-center justify-between'>
+          <h1 className="text-2xl text-center font-bold text-blue-900 py-2 mx-2">{Name}</h1>
+          <div className='flex mx-4'>
+            <div className='relative w-6 h-6 flex flex-row'>
+                <Image src={star} alt="star" layout='fill' objectFit="cover" className="rounded-lg w-full" />
+            </div>
+            <div className='relative w-6 h-6 flex flex-row'>
+                <Image src={star} alt="star" layout='fill' objectFit="cover" className="rounded-lg w-full" />
+            </div>
+            <div className='relative w-6 h-6 flex flex-row'>
+                <Image src={star} alt="star" layout='fill' objectFit="cover" className="rounded-lg w-full" />
+            </div>
+            <div className='relative w-6 h-6 flex flex-row'>
+                <Image src={star} alt="star" layout='fill' objectFit="cover" className="rounded-lg w-full" />
+            </div>
+            <div className='relative w-6 h-6 flex flex-row'>
+                <Image src={star} alt="star" layout='fill' objectFit="cover" className="rounded-lg w-full" />
+            </div>
+        </div>
+        </div>
+        {!updateMode ? (
+          <div className='flex flex-row items-center mb-2'>
+            <div className="flex flex-row rounded-lg mr-2">
+              <div className="flex flex-col justify-evenly mt-4 px-2">
+                <div className="flex flex-row items-center text-gray-500">
+                  <h2 className="mr-1 font-bold">Wait:</h2>
+                  <h2>{WaitTime}</h2>
+                </div>
+                <div className="flex flex-row items-center text-gray-500">
+                  <h2 className="mr-1 font-bold">Cover:</h2>
+                  <h2>${CoverFee}</h2>
+                </div>
+                <div className="flex flex-row items-center text-gray-500">
+                  <h2 className="mr-1 font-bold">Vibe:</h2>
+                  <h2>{mostFrequentVibe}</h2>
+                </div>
               </div>
-              <div className="flex flex-col items-center">
-                <label htmlFor="coverFee" className="text-neutral-900 font-bold">
-                  Cover Fee
-                </label>
-                <select id="coverFee" name="coverFee" className="bg-slate-200 rounded-lg" onChange={handleCoverChange}>
-                  <option value="-1">N/A</option>
-                  <option value="0"> No Cover </option>
-                  <option value="5"> $5 </option>
-                  <option value="10"> $10 </option>
-                  <option value="15"> $15 </option>
-                  <option value="20"> $20 </option>
-                  <option value="30"> $30 </option>
-                  <option value="45"> $45 </option>
-                  <option value="60"> $60 </option>
-                </select>
+              <div className="flex flex-col justify-evenly mt-6 px-2">
+                <div className="flex flex-row items-center text-gray-500">
+                  <h2 className="mr-1 font-bold">Bouncer:</h2>
+                  <h2>{Bouncer}</h2>
+                </div>
+                <div className="flex flex-row items-center text-gray-500">
+                  <h2 className="mr-1 font-bold">Cops:</h2>
+                  <h2>{Cops ? 'Yes' : 'No'}</h2>
+                </div>
+                <div className="flex flex-row items-center text-gray-500">
+                  <h2 className="mr-1 font-bold">LineLeap:</h2>
+                  <h2>Yes</h2>
+                </div>
               </div>
             </div>
-            <div className='flex justify-evenly px-4 mx-4 mb-4'>
-              <div className="flex flex-col items-center">
-                <label htmlFor="vibe" className="text-neutral-900 font-bold">
-                  Vibe
-                </label>
-                <select id="vibe" name="vibe" className="bg-slate-200 rounded-lg" onChange={handleVibeChange}>
-                  <option value="Empty">N/A</option>
-                  <option value="Dead">Dead</option>
-                  <option value="Mid">Mid</option>
-                  <option value="Bumpin">Bumpin</option>
-                </select>
-              </div>
-              <div className="flex flex-col items-center">
-                <label htmlFor="bouncer" className="text-neutral-900 font-bold">
-                  Bouncer
-                </label>
-                <select id="bouncer" name="bouncer" className="bg-slate-200 rounded-lg" onChange={handleBouncerChange}>
-                  <option value="Empty">N/A</option>
-                  <option value="Chill">Chill</option>
-                  <option value="Mid">Mid</option>
-                  <option value="Strict">Strict</option>
-                </select>
-              </div>
-            </div>
-            <div className="flex flex-col items-center mb-4">
-              <label htmlFor="cops" className="text-neutral-900 font-bold">
-                Cops
-              </label>
-              <select id="cops" name="cops" className="bg-slate-200 rounded-lg" onChange={handleCopsChange}>
-                <option value="Empty">N/A</option>
-                <option value="false">No</option>
-                <option value="true">Yes</option>
-              </select>
-            </div>
-          </form>
-          <div className='flex flex-row justify-evenly pb-4'>
-          <button 
-              className='bg-slate-50 rounded-lg shadow-md hover:scale-105 hover:shadow-2xl text-neutral-900 font-bold py-2 px-4'
-              onClick={handleCancel}
+            <div className="flex flex-col items-center mt-14">
+              <button
+                className="bg-blue-500 rounded-lg shadow-md hover:scale-105 hover:shadow-2xl text-white font-bold px-2 py-1 mr-1" 
+                onClick={updateInfo}
               >
-              Cancel
-            </button>
-            <button
-              className="bg-slate-50 rounded-lg shadow-md hover:scale-105 hover:shadow-2xl text-neutral-900 font-bold py-2 px-4"
-              onClick={handleSubmit}
-            >
-              Submit
-            </button>
+                Rate
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        ) : (
+          <div>
+            <form className="flex flex-col rounded-lg bg-slate-50 mx-4 mb-4">
+              <div className='flex justify-evenly px-4 mx-4 pb-4'>
+                <div className="flex flex-col items-center">
+                  <label htmlFor="waitTime" className="text-neutral-900 font-bold">
+                    Wait Time
+                  </label>
+                  <select id="waitTime" name="waitTime" className="bg-slate-200 rounded-lg" onChange={handleWaitChange}>
+                    <option value="-1">N/A</option>
+                    <option value="0"> No Wait </option>
+                    <option value="5">5 Min</option>
+                    <option value="10"> 10 Min </option>
+                    <option value="15"> 15 Min </option>
+                    <option value="20"> 20 Min </option>
+                    <option value="30"> 30 Min </option>
+                    <option value="45"> 45 Min </option>
+                    <option value="60"> 1 Hr </option>
+                    <option value="90"> 1.5 Hrs </option>
+                    <option value="120"> 2 Hrs </option>
+                  </select>
+                </div>
+                <div className="flex flex-col items-center">
+                  <label htmlFor="coverFee" className="text-neutral-900 font-bold">
+                    Cover Fee
+                  </label>
+                  <select id="coverFee" name="coverFee" className="bg-slate-200 rounded-lg" onChange={handleCoverChange}>
+                    <option value="-1">N/A</option>
+                    <option value="0"> No Cover </option>
+                    <option value="5"> $5 </option>
+                    <option value="10"> $10 </option>
+                    <option value="15"> $15 </option>
+                    <option value="20"> $20 </option>
+                    <option value="30"> $30 </option>
+                    <option value="45"> $45 </option>
+                    <option value="60"> $60 </option>
+                  </select>
+                </div>
+              </div>
+              <div className='flex justify-evenly px-4 mx-4 mb-4'>
+                <div className="flex flex-col items-center">
+                  <label htmlFor="vibe" className="text-neutral-900 font-bold">
+                    Vibe
+                  </label>
+                  <select id="vibe" name="vibe" className="bg-slate-200 rounded-lg" onChange={handleVibeChange}>
+                    <option value="Empty">N/A</option>
+                    <option value="Dead">Dead</option>
+                    <option value="Mid">Mid</option>
+                    <option value="Bumpin">Bumpin</option>
+                  </select>
+                </div>
+                <div className="flex flex-col items-center">
+                  <label htmlFor="bouncer" className="text-neutral-900 font-bold">
+                    Bouncer
+                  </label>
+                  <select id="bouncer" name="bouncer" className="bg-slate-200 rounded-lg" onChange={handleBouncerChange}>
+                    <option value="Empty">N/A</option>
+                    <option value="Chill">Chill</option>
+                    <option value="Mid">Mid</option>
+                    <option value="Strict">Strict</option>
+                  </select>
+                </div>
+              </div>
+              <div className="flex flex-col items-center mb-4">
+                <label htmlFor="cops" className="text-neutral-900 font-bold">
+                  Cops
+                </label>
+                <select id="cops" name="cops" className="bg-slate-200 rounded-lg" onChange={handleCopsChange}>
+                  <option value="Empty">N/A</option>
+                  <option value="false">No</option>
+                  <option value="true">Yes</option>
+                </select>
+              </div>
+            </form>
+            <div className='flex flex-row justify-evenly pb-4'>
+            <button 
+                className='bg-slate-50 rounded-lg shadow-md hover:scale-105 hover:shadow-2xl text-neutral-900 font-bold py-2 px-4'
+                onClick={handleCancel}
+                >
+                Cancel
+              </button>
+              <button
+                className="bg-slate-50 rounded-lg shadow-md hover:scale-105 hover:shadow-2xl text-neutral-900 font-bold py-2 px-4"
+                onClick={handleSubmit}
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

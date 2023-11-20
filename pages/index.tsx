@@ -8,8 +8,6 @@ import supabase from '../supabase.js';
 import { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
 //components
 import Tile from '../components/Tile';
-//Pictures
-import blueline from '../public/blueline.png';
 //other
 import cookie from "js-cookie";
 import {v4 as uuid} from 'uuid';
@@ -29,8 +27,6 @@ interface Bar {
 export default function Home() {
   const [barsData, setBarsData] = useState<Bar[]>([]);
   const [user, setUser] = useState<User | null>(null);
-  const [userxcoord, setUserxcoord] = useState(0);
-  const [userycoord, setUserycoord] = useState(0);
   const [numVisited, setNumVisited] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -61,11 +57,9 @@ export default function Home() {
 
   const handleAuthStateChange = (event: AuthChangeEvent, session: Session | null) => {
     if (event === 'SIGNED_IN' && session?.user) {
-      console.log('SIGNED_IN', session.user);
       setUser(session.user);
     }
     if (event === 'SIGNED_OUT') {
-      console.log('SIGNED_OUT');
       setUser(null);
     }
   };
@@ -75,7 +69,6 @@ export default function Home() {
       try {
         const session = await supabase.auth.getSession();
         if (session) {
-          console.log(session)
           setUser(session.data.session?.user || null)
         }
       } catch (error) {
@@ -95,29 +88,6 @@ export default function Home() {
     });
 
   }, []);
-  
-
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition(position => {
-      const { latitude, longitude } = position.coords;
-      // Show a map centered at latitude / longitude.
-      console.log(latitude, longitude)
-      setUserxcoord(latitude);
-      setUserycoord(longitude);
-    });
-
-  }, [userxcoord , userycoord]);
-
-  const handleGoogleSignIn = async () => {
-    const {data , error} = await supabase.auth.signInWithOAuth({provider: 'google'});
-    console.log('here')
-    console.log(data)
-    console.log(error)
-  }
-
-  const handleGoogleSignOut = async () => {
-    const {error} = await supabase.auth.signOut();
-  }
 
   useEffect(() => {
     const getBarsInfo = async () => {
@@ -125,7 +95,6 @@ export default function Home() {
       if (error) {
         console.error(error);
       } else {
-        console.log(data)
         setBarsData(data || []);
       }
     };
@@ -153,6 +122,7 @@ export default function Home() {
     Bar.Name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+
   return (
     <div className="flex flex-col items-center">
       <Head>
@@ -162,50 +132,25 @@ export default function Home() {
         <link rel="icon" href="favicon.png" />
       </Head>
 
-      <div className='flex flex-col items-center pb-8'>
-        <div className="flex items-center w-full h-20 p-8">
-          <Image src={blueline} width={75} height={75} alt="" />
-          <h1 className="text-6xl bg-gradient-to-r from-slate-950 via-blue-800 to-blue-500 sm:text-7xl md:text-8xl font-bold bg-clip-text text-transparent pl-4">
-            blueline
-          </h1>
-        </div>
-        {numVisited > 10 &&
-          (
-            <div className='pt-8'>
-              {user ? (
-                <button
-                  className="bg-gradient-to-r from-slate-950 via-blue-800 to-blue-500 text-white font-bold p-2 rounded-lg shadow hover:scale-105 hover:shadow-lg"
-                  onClick={handleGoogleSignOut}
-                >
-                  Sign Out
-                </button>
-              ) : (
-                <button
-                  className="bg-gradient-to-r from-slate-950 via-blue-800 to-blue-500 text-white font-bold p-2 rounded-lg shadow hover:scale-105 hover:shadow-lg"
-                  onClick={handleGoogleSignIn}
-                >
-                  Sign In w/ UMich
-                </button>
-              )}
-            </div>
-          )
-        }
-      </div>
-
       {
         numVisited > 10 ? (
           user && (
             <div>
-              <div className="flex justify-center items-center pb-4">
-                <input
-                  type="text"
-                  placeholder="Search by name..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="border rounded-md p-2 w-1/2 border-blue-950"
-                />
+              <div className='flex flex-row items-center justify-evenly'>
+                <div className="flex justify-center items-center mb-4 w-6/12">
+                  <input
+                    type="text"
+                    placeholder="Search by name..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="border rounded-md p-2 w-full border-blue-950"
+                  />
+                </div>
+                <div>
+                  <button className='bg-green-500 text-white p-2 mb-4 rounded-lg shadow-md hover:scale-105'>Find Bars Near Me</button>
+                </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
+              <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                 {filteredBars.map((bar) => (
                   <Tile
                     WaitTimeArray={bar.WaitTimeArray}
@@ -217,8 +162,6 @@ export default function Home() {
                     Cops={bar.Cops}
                     xcoord={bar.xcoord}
                     ycoord={bar.ycoord}
-                    userxcoord={userxcoord}
-                    userycoord={userycoord}
                   />
                 ))}
               </div>
@@ -226,16 +169,21 @@ export default function Home() {
           )
         ) : (
           <div>
-              <div className="flex justify-center items-center pb-4">
-                <input
-                  type="text"
-                  placeholder="Search by name..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="border rounded-md p-2 w-1/2 border-blue-950"
-                />
+              <div>
+                <div className="flex justify-center items-center pb-4">
+                  <input
+                    type="text"
+                    placeholder="Search by name..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="border rounded-md p-2 w-1/2 border-blue-950"
+                  />
+                </div>
+                <div>
+                  <button className='"bg-green-500 rounded-lg shadow-md hover:scale-100 text-white font-bold'>Find Bars Near Me</button>
+                </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
+              <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                 {filteredBars.map((bar) => (
                   <Tile
                     WaitTimeArray={bar.WaitTimeArray}
@@ -247,8 +195,6 @@ export default function Home() {
                     Cops={bar.Cops}
                     xcoord={bar.xcoord}
                     ycoord={bar.ycoord}
-                    userxcoord={userxcoord}
-                    userycoord={userycoord}
                   />
                 ))}
               </div>
