@@ -182,21 +182,21 @@ const Tile: React.FC<TileProps> = ({
 
   return (
     <div className="flex flex-row items-center overflow-hidden bg-gradient-to-r bg-gray-200 rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 mx-2 py-2">
-        <div className="relative w-36 h-36 ml-2">
-          {ImageUrl ? 
-            (
-              <Image src={ImageUrl} alt="Bar" layout='fill' objectFit="cover" className="rounded-lg w-full" />
-            )
-            :
-            (
-              <Image src={blueline} alt="Bar" layout='fill' objectFit="cover" className="rounded-lg w-full" />
-            )
-          }
-        </div>
-      <div>
+      <div className="relative h-36 w-48 ml-2">
+        {ImageUrl ? 
+          (
+            <Image src={ImageUrl} alt="Bar" layout='fill' objectFit="cover" className="rounded-lg w-full" />
+          )
+          :
+          (
+            <Image src={blueline} alt="Bar" layout='fill' objectFit="cover" className="rounded-lg w-full" />
+          )
+        }
+      </div>
+      <div className=''>
         <div className='flex flex-row items-center justify-between'>
           <h1 className="text-2xl text-center font-bold text-blue-900 py-2 mx-2">{Name}</h1>
-          <div className='flex mx-4'>
+          <div className='flex mr-1'>
             <div className='relative w-6 h-6 flex flex-row'>
                 <Image src={star} alt="star" layout='fill' objectFit="cover" className="rounded-lg w-full" />
             </div>
@@ -216,37 +216,37 @@ const Tile: React.FC<TileProps> = ({
         </div>
         {!updateMode ? (
           <div className='flex flex-row items-center mb-2'>
-            <div className="flex flex-row rounded-lg mr-2">
-              <div className="flex flex-col justify-evenly mt-4 px-2">
+            <div className="flex flex-row rounded-lg">
+              <div className="flex flex-col justify-evenly mt-4 px-1">
                 <div className="flex flex-row items-center text-gray-500">
-                  <h2 className="mr-1 font-bold">Wait:</h2>
-                  <h2>{WaitTime}</h2>
+                  <h3 className="mr-1 font-bold text-sm">Wait:</h3>
+                  <h3 className='text-sm'>{WaitTime}</h3>
                 </div>
                 <div className="flex flex-row items-center text-gray-500">
-                  <h2 className="mr-1 font-bold">Cover:</h2>
-                  <h2>${CoverFee}</h2>
+                  <h3 className="mr-1 font-bold text-sm">Cover:</h3>
+                  <h3 className='text-sm'>${CoverFee}</h3>
                 </div>
                 <div className="flex flex-row items-center text-gray-500">
-                  <h2 className="mr-1 font-bold">Vibe:</h2>
-                  <h2>{mostFrequentVibe}</h2>
+                  <h3 className="mr-1 font-bold text-sm">Vibe:</h3>
+                  <h3 className='text-sm'>{mostFrequentVibe}</h3>
                 </div>
               </div>
-              <div className="flex flex-col justify-evenly mt-6 px-2">
+              <div className="flex flex-col justify-evenly mt-4 px-1 mr-2">
                 <div className="flex flex-row items-center text-gray-500">
-                  <h2 className="mr-1 font-bold">Bouncer:</h2>
-                  <h2>{Bouncer}</h2>
+                  <h3 className="mr-1 font-bold text-sm">Bouncer:</h3>
+                  <h3 className='text-sm'>{Bouncer}</h3>
                 </div>
                 <div className="flex flex-row items-center text-gray-500">
-                  <h2 className="mr-1 font-bold">Cops:</h2>
-                  <h2>{Cops ? 'Yes' : 'No'}</h2>
+                  <h3 className="mr-1 font-bold text-sm">Cops:</h3>
+                  <h3 className='text-sm'>{Cops ? 'Yes' : 'No'}</h3>
                 </div>
                 <div className="flex flex-row items-center text-gray-500">
-                  <h2 className="mr-1 font-bold">LineLeap:</h2>
-                  <h2>Yes</h2>
+                  <h3 className="mr-1 font-bold text-sm">LineLeap:</h3>
+                  <h3 className='text-sm'>Yes</h3>
                 </div>
               </div>
             </div>
-            <div className="flex flex-col items-center mt-14">
+            <div className="flex flex-col items-center mt-10">
               <button
                 className="bg-blue-500 rounded-lg shadow-md hover:scale-105 hover:shadow-2xl text-white font-bold px-2 py-1 mr-1" 
                 onClick={updateInfo}

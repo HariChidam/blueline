@@ -169,18 +169,18 @@ export default function Home() {
           )
         ) : (
           <div>
-              <div>
-                <div className="flex justify-center items-center pb-4">
+              <div className='flex flex-row items-center justify-evenly'>
+                <div className="flex justify-center items-center mb-4 w-6/12">
                   <input
                     type="text"
                     placeholder="Search by name..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="border rounded-md p-2 w-1/2 border-blue-950"
+                    className="border rounded-md p-2 w-full border-blue-950"
                   />
                 </div>
                 <div>
-                  <button className='"bg-green-500 rounded-lg shadow-md hover:scale-100 text-white font-bold'>Find Bars Near Me</button>
+                  <button className='bg-green-500 text-white p-2 mb-4 rounded-lg shadow-md hover:scale-105'>Find Bars Near Me</button>
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
