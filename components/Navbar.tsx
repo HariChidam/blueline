@@ -96,18 +96,18 @@ export default function Navbar() {
                 <ul className="flex flex-row items-center justify-end">
                 <li className="mx-1">
                     <Link legacyBehavior href="/">
-                    <a className="text-blue-500 hover:text-blue-900 transition-colors duration-300 px-4 py-2 rounded-md text-lg ">Bars</a>
+                    <a className="text-blue-500 hover:text-blue-900 transition-colors duration-300 px-2 py-2 rounded-md text-lg ">Bars</a>
                     </Link>
                 </li>
                 <li className="mx-1">
                     <Link legacyBehavior href="/about">
-                    <a className="text-blue-500 hover:text-blue-900 transition-colors duration-300 px-4 py-2 rounded-md text-lg">About Us</a>
+                    <a className="text-blue-500 hover:text-blue-900 transition-colors duration-300 px-2 py-2 rounded-md text-lg">About</a>
                     
                     </Link>
                 </li>
                 <li className="mx-1">
                     <Link legacyBehavior href="/contactUs">
-                    <a className="text-blue-500 hover:text-blue-900 transition-colors duration-300 px-4 py-2 rounded-md text-lg">Contact Us</a>
+                    <a className="text-blue-500 hover:text-blue-900 transition-colors duration-300 px-2 py-2 rounded-md text-lg">Contact Us</a>
                     </Link>
                 </li>
                 </ul>

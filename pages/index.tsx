@@ -135,35 +135,43 @@ export default function Home() {
       {
         numVisited > 10 ? (
           user && (
-            <div>
-              <div className='flex flex-row items-center justify-evenly'>
-                <div className="flex justify-center items-center mb-4 w-6/12">
-                  <input
-                    type="text"
-                    placeholder="Search by name..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="border rounded-md p-2 w-full border-blue-950"
-                  />
-                </div>
-                <div>
-                  <button className='bg-green-500 text-white p-2 mb-4 rounded-lg shadow-md hover:scale-105'>Find Bars Near Me</button>
+            <div className='flex flex-col'>
+              <div className="top-0 bg-white z-10">
+                <div className="flex flex-row items-center justify-evenly">
+                  <div className="flex justify-center items-center mb-4 w-6/12">
+                    <input
+                      type="text"
+                      placeholder="Search by name..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="border rounded-md p-2 w-full border-blue-950"
+                    />
+                  </div>
+                  <div>
+                    <button className="bg-green-500 text-white p-2 mb-4 rounded-lg shadow-md hover:scale-105">
+                      Find Bars Near Me
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                {filteredBars.map((bar) => (
-                  <Tile
-                    WaitTimeArray={bar.WaitTimeArray}
-                    CoverFee={bar.CoverFee}
-                    VibeArray={bar.VibeArray}
-                    ImageUrl={bar.imageUrl}
-                    Name={bar.Name}
-                    Bouncer={bar.Bouncer}
-                    Cops={bar.Cops}
-                    xcoord={bar.xcoord}
-                    ycoord={bar.ycoord}
-                  />
-                ))}
+              <div className="mt-2">
+                {/* Display tiles */}
+                <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                  {filteredBars.map((bar) => (
+                    <Tile
+                      key={bar.Name} // Add a unique key to each Tile
+                      WaitTimeArray={bar.WaitTimeArray}
+                      CoverFee={bar.CoverFee}
+                      VibeArray={bar.VibeArray}
+                      ImageUrl={bar.imageUrl}
+                      Name={bar.Name}
+                      Bouncer={bar.Bouncer}
+                      Cops={bar.Cops}
+                      xcoord={bar.xcoord}
+                      ycoord={bar.ycoord}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           )
@@ -186,6 +194,7 @@ export default function Home() {
               <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                 {filteredBars.map((bar) => (
                   <Tile
+                    key={bar.Name} // Add a unique key to each Tile
                     WaitTimeArray={bar.WaitTimeArray}
                     CoverFee={bar.CoverFee}
                     VibeArray={bar.VibeArray}
