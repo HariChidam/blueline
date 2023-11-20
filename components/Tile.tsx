@@ -197,19 +197,19 @@ const Tile: React.FC<TileProps> = ({
         <div className='flex flex-row items-center justify-between'>
           <h1 className="text-2xl text-center font-bold text-blue-900 py-2 mx-2">{Name}</h1>
           <div className='flex mr-1'>
-            <div className='relative w-6 h-6 flex flex-row'>
+            <div className='relative w-4 h-4 flex flex-row'>
                 <Image src={star} alt="star" layout='fill' objectFit="cover" className="rounded-lg w-full" />
             </div>
-            <div className='relative w-6 h-6 flex flex-row'>
+            <div className='relative w-4 h-4 flex flex-row'>
                 <Image src={star} alt="star" layout='fill' objectFit="cover" className="rounded-lg w-full" />
             </div>
-            <div className='relative w-6 h-6 flex flex-row'>
+            <div className='relative w-4 h-4 flex flex-row'>
                 <Image src={star} alt="star" layout='fill' objectFit="cover" className="rounded-lg w-full" />
             </div>
-            <div className='relative w-6 h-6 flex flex-row'>
+            <div className='relative w-4 h-4 flex flex-row'>
                 <Image src={star} alt="star" layout='fill' objectFit="cover" className="rounded-lg w-full" />
             </div>
-            <div className='relative w-6 h-6 flex flex-row'>
+            <div className='relative w-4 h-4 flex flex-row'>
                 <Image src={star} alt="star" layout='fill' objectFit="cover" className="rounded-lg w-full" />
             </div>
         </div>
