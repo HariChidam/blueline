@@ -61,7 +61,7 @@ export default function Navbar() {
 
 
   return (
-    <div className='shadow-xl mb-8'>
+    <div className='shadow-xl mb-8 mt-4'>
         <div className="flex items-center w-full h-20 p-8">
             <h1 className="text-6xl text-blue-900 sm:text-7xl md:text-8xl font-bold">
                 Blue
